@@ -5,7 +5,7 @@
 ## 配置 setting.xml 
 
 > 这里主要讲几个常用的关键字：
->
+
 
 ### localRepository
 
@@ -84,4 +84,10 @@
 ```
 
 一般用于配置需要验证的mirror和repository，可配置多个server。
+
+## 配置pom.xml
+
+如何查看依赖树？
+
+mvn dependency:tree > d.txt
 
