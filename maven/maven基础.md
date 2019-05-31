@@ -87,7 +87,128 @@
 
 ## 配置pom.xml
 
-如何查看依赖树？
+> 查看当前项目的依赖树：mvn dependency:tree > d.txt
+> 查看当前项目的已解析依赖：mvn dependency:list
+> 帮助分析当前项目的依赖:mvn dependency:analyze 
+> 	![依赖分析](images/依赖分析.png)
+> 上图中 **Used undeclared dependencies**，意指项目中使用到的，但是没有显式声明的依赖。这种依赖是通过直接依赖传递进来的，当升级直接依赖的时候，相关传递性依赖的版本也可能发生变化，这种变化不易察觉，但是有可能导致当前项目出错。例如由于接口的改变，当前项目中的相关代码无法编译。
+> **Unused declared dependencies**，意指项目中未使用的，但显式声明的依赖。对于这样一类依赖，我们不应该简单地直接删除其声明，而是应该仔细分析。由于dependency：analyze只会分析编译主代码和测试代码需要用到的依赖，一些执行测试和运行时需要的依赖它就发现不了。
 
-mvn dependency:tree > d.txt
+### groupId
+
+组类型，举例：com.berg
+
+### artfactId 
+
+功能命名
+
+### version
+
+版本号
+
+> groupId、artifactId和version，这三个元素定义了一个项目基本的坐标，在Maven的世界，任何的jar、pom或者war都是以基于这些基本的坐标进行区分的。
+
+### packaging
+打包方式 默认为 jar。可选：
+- war
+- ejb
+- ear
+- rar
+- par
+- pom
+- maven-plugin
+
+### dependencyManagement
+
+> 主要用来做以来管理
+
+1. 最好只出现在父pom
+2. 统一版本号
+3. 声明 (子POM里需要使用再来引用)
+
+### dependency
+
+```xml
+＜project＞
+……
+＜dependencies＞
+＜dependency＞
+＜groupId＞……＜/groupId＞
+＜artifactId＞……＜/artifactId＞
+＜version＞……＜/version＞
+＜type＞……＜/type＞
+＜scope＞……＜/scope＞
+＜optional＞……＜/optional＞
+＜exclusions＞
+＜exclusion＞
+……
+＜/exclusion＞
+……
+＜/exclusions＞
+＜/dependency＞
+……
+＜/dependencies＞
+……
+＜/project＞
+```
+
+这里主要讲一下几个参数：
+
+- type：依赖的类型，默认为jar，对应于项目坐标定义的packaging。
+
+- scope：依赖的范围。
+	
+	1. compile：编译依赖范围。默认依赖范围。使用此依赖范围的Maven依赖，对于编译、测试、运行三种classpath都有效。典型的例子是spring-core，在编译、测试和运行的时候都需要使用该依赖。
+	
+	2. test：测试依赖范围。使用此依赖范围的Maven依赖，只对于测试classpath有效，在编译主代码或者运行项目的使用时将无法使用此类依赖。典型的例子是JUnit，它只有在编译测试代码及运行测试的时候才需要。
+	
+	3. provided：已提供依赖范围。使用此依赖范围的Maven依赖，对于编译和测试classpath有效，但在运行时无效。典型的例子是servlet-api，编译和测试项目的时候需要该依赖，但在运行项目的时候，由于容器已经提供，就不需要Maven重复地引入一遍。
+	
+	4. runtime：运行时依赖范围。使用此依赖范围的Maven依赖，对于测试和运行classpath有效，但在编译主代码时无效。典型的例子是JDBC驱动实现，项目主代码的编译只需要JDK提供的JDBC接口，只有在执行测试或者运行项目的时候才需要实现上述接口的具体JDBC驱动。
+	
+	5. system：系统依赖范围。该依赖与三种classpath的关系，和provided依赖范围完全一致。
+	
+	   - ```xml
+	     ＜dependency＞
+	     ＜groupId＞javax.sql＜/groupId＞
+	     ＜artifactId＞jdbc-stdext＜/artifactId＞
+	     ＜version＞2.0＜/version＞
+	     ＜scope＞system＜/scope＞
+	     ＜systemPath＞${java.home}/lib/rt.jar＜/systemPath＞
+	     ＜/dependency＞
+	     ```
+	
+	     system范围的依赖时必须通过systemPath元素显式地指定依赖文件的路径。
+	
+	6. import（Maven 2.0.9及以上）：导入依赖范围。只在dependencyManagement元素下才有效果，使用该范围的依赖通常指向一个POM，作用是将目标POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。示例：
+
+	   - ```xml
+	     ＜dependencyManagement＞
+	     
+	     ＜dependencies＞
+	     
+	     ＜dependency＞
+	     
+	     ＜groupId＞com.juvenxu.mvnbook.account＜/groupId＞
+	     
+	     ＜artifactId＞account-parent＜/artifactId＞
+	     
+	     ＜version＞1.0-SNAPSHOT＜/version＞
+	     
+	     ＜type＞pom＜/type＞
+	     
+	     ＜scope＞import＜/scope＞
+	     
+	     ＜/dependency＞
+	     
+	     ＜/dependencies＞
+	     
+	     ＜/dependencyManagement＞
+	     ```
+	
+	     上面的代码会将 groupId 为 com.juvenxu.mvnbook.account，artifactId 为 account-parent的POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。
+	
+- optional：标记依赖是否可选。可选依赖不会传递，关于可选依赖需要说明的一点是，在理想的情况下，是不应该使用可选依赖的。使用可选依赖的原因是某一个项目实现了多个特性，在面向对象设计中，有个单一职责性原则，意指一个类应该只有一项职责，而不是糅合太多的功能。这个原则在规划Maven项目的时候也同样适用。
+
+- exclusions：用来排除传递性依赖。![排除依赖](images/排除依赖.png)
 
