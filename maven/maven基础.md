@@ -133,10 +133,14 @@
 ## 配置pom.xml
 
 > 查看当前项目的依赖树：mvn dependency:tree > d.txt
+> 
 > 查看当前项目的已解析依赖：mvn dependency:list
+> 
 > 帮助分析当前项目的依赖:mvn dependency:analyze 
+> 
 > 	![依赖分析](images/依赖分析.png)
 > 上图中 **Used undeclared dependencies**，意指项目中使用到的，但是没有显式声明的依赖。这种依赖是通过直接依赖传递进来的，当升级直接依赖的时候，相关传递性依赖的版本也可能发生变化，这种变化不易察觉，但是有可能导致当前项目出错。例如由于接口的改变，当前项目中的相关代码无法编译。
+> 
 > **Unused declared dependencies**，意指项目中未使用的，但显式声明的依赖。对于这样一类依赖，我们不应该简单地直接删除其声明，而是应该仔细分析。由于dependency：analyze只会分析编译主代码和测试代码需要用到的依赖，一些执行测试和运行时需要的依赖它就发现不了。
 
 ### groupId
