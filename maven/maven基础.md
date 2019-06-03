@@ -15,6 +15,47 @@
 
 可以设置代理，可设置多个，类似于网络翻墙操作
 
+#### proxy 
+
+```xml
+  <!-- proxies
+   | This is a list of proxies which can be used on this machine to connect to the network.
+   | Unless otherwise specified (by system property or command-line switch), the first proxy
+   | specification in this list marked as active will be used.
+   |-->
+   <!-- -->
+  <proxies>
+    <!-- proxy
+     | Specification for one proxy, to be used in connecting to the network.
+     |
+    
+    -->
+	 <!--<proxy>
+      <id>optional</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>172.17.18.84</host>
+      <port>8080</port>
+      <nonProxyHosts>local.net|some.host.com</nonProxyHosts>
+    </proxy>-->
+	<!-- 
+	<proxy>
+      <id>travelsky</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <username/>
+      <password/>
+      <host>172.17.18.80</host>
+      <port>8080</port>
+      <nonProxyHosts>local.net|10.*.*.*|172.17.*.*|172.18.*.*|10.8.*|172.*|172.27.*.*|*.travelsky.*</nonProxyHosts>
+    </proxy>
+	-->
+  </proxies>
+```
+
+
+
+
 ### mirrors
 
 设置镜像，可设置多个，可在该地址上下载依赖，类似于在pom中设置repository
@@ -52,6 +93,10 @@
 一个镜像可以对应多个仓库，具体在mirrorOf上配置。**注意：**镜像仓库会完全屏蔽了被镜像仓库。
 
 ### servers
+
+一般用于配置私服的验证授权信息，可以配置多个 server
+
+#### server
 
 ```xml
   <!-- servers
@@ -180,7 +225,7 @@
 	
 	     system范围的依赖时必须通过systemPath元素显式地指定依赖文件的路径。
 	
-	6. import（Maven 2.0.9及以上）：导入依赖范围。只在dependencyManagement元素下才有效果，使用该范围的依赖通常指向一个POM，作用是将目标POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。示例：
+	6. import（Maven 2.0.9及以上）：导入依赖范围。**只在dependencyManagement元素下才有效果**，使用该范围的依赖通常指向一个POM，作用是将目标POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。示例：
 
 	   - ```xml
 	     ＜dependencyManagement＞
@@ -207,7 +252,116 @@
 	     ```
 	
 	     上面的代码会将 groupId 为 com.juvenxu.mvnbook.account，artifactId 为 account-parent的POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。
+	   
+	- scope 依赖传递：	
+
+	|          | compile    | provided | runtime  | test |
+	| -------- | ---------- | -------- | -------- | ---- |
+	| compile  | compile(*) | -        | runtime  | -    |
+	| provided | provided   | -        | provided | -    |
+	| runtime  | runtime    | -        | runtime  | -    |
+	| test     | test       | -        | test     | -    |
+	
+	
 	
 - optional：标记依赖是否可选。可选依赖不会传递，关于可选依赖需要说明的一点是，在理想的情况下，是不应该使用可选依赖的。使用可选依赖的原因是某一个项目实现了多个特性，在面向对象设计中，有个单一职责性原则，意指一个类应该只有一项职责，而不是糅合太多的功能。这个原则在规划Maven项目的时候也同样适用。
 
 - exclusions：用来排除传递性依赖。![排除依赖](images/排除依赖.png)
+
+[依赖传递官方文档链接](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope)
+
+### repository
+
+- 仓库分类：
+
+![仓库分类](images/仓库分类.png)
+
+- 远程仓库配置详情：
+
+```xml
+＜repositories＞
+
+＜repository＞
+
+＜id＞jboss＜/id＞
+
+＜name＞JBoss Repository＜/name＞
+
+＜url＞http://repository.jboss.com/maven2/＜/url＞
+
+＜releases＞
+
+＜enabled＞true＜/enabled＞
+
+＜/releases＞
+
+＜snapshots＞
+
+＜enabled＞false＜/enabled＞
+
+＜/snapshots＞
+
+＜layout＞default＜/layout＞
+
+＜/repository＞
+
+＜/repositories＞
+```
+
+> 该例配置中的releases和snapshots元素比较重要，它们用来控制Maven对于发布版构件和快照版构件的下载。
+
+对于releases和snapshots来说，除了enabled，它们还包含另外两个子元素updatePolicy和checksumPolicy：
+
+```xml
+＜snapshots＞
+
+＜enabled＞true＜/enabled＞
+
+＜updatePolicy＞daily＜/updatePolicy＞
+
+＜checksumPolicy＞ignore＜/checksumPolicy＞
+
+＜/snapshots＞
+```
+
+> 元素updatePolicy用来配置Maven从远程仓库检查更新的频率，默认的值是daily，表示Maven每天检查一次。其他可用的值包括：never—从不检查更新；always—每次构建都检查更新；interval:X—每隔X分钟检查一次更新（X为任意整数）。
+>
+> 元素checksumPolicy用来配置Maven检查检验和文件的策略。当构件被部署到Maven仓库中时，会同时部署对应的校验和文件。在下载构件的时候，Maven会验证校验和文件，如果校验和验证失败，若hecksumPolicy的值为默认的warn时，Maven会在执行构建时输出警告信息，其他可用的值包括：fail—Maven遇到校验和错误就让构建失败；ig-nore—使Maven完全忽略校验和错误。
+
+- 远程仓库的认证：
+
+使用settings.xml文件中servers元素及其server子元素配置仓库认证信息。
+
+### distributionManagement
+
+```xml
+＜distributionManagement＞
+
+＜repository＞
+
+＜id＞proj-releases＜/id＞
+
+＜name＞Proj Release Repository＜/name＞
+
+＜url＞http://192.168.1.100/content/repositories/proj-releases＜/url＞
+
+＜/repository＞
+
+＜snapshotRepository＞
+
+＜id＞proj-snapshots＜/id＞
+
+＜name＞Proj Snapshot Repository＜/name＞
+
+＜url＞http://192.168.1.100/content/repositories/proj-snapshots＜/url＞
+
+＜/snapshotRepository＞
+
+＜/distributionManagement＞
+```
+
+distributionManagement包含repository和snapshotRepository子元素，前者表示发布版本构件的仓库，后者表示快照版本的仓库。
+
+远程仓库部署构件的时候，往往需要认证。需要在settings.xml中创建一个server元素，其id与仓库的id匹配，并配置正确的认证信息。不论从远程仓库下载构件，还是部署构件至远程仓库，当需要认证的时候，配置的方式是一样的。
+
+发布命令：**mvn clean deploy**
