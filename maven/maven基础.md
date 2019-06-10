@@ -369,3 +369,8 @@ distributionManagement包含repository和snapshotRepository子元素，前者表
 远程仓库部署构件的时候，往往需要认证。需要在settings.xml中创建一个server元素，其id与仓库的id匹配，并配置正确的认证信息。不论从远程仓库下载构件，还是部署构件至远程仓库，当需要认证的时候，配置的方式是一样的。
 
 发布命令：**mvn clean deploy**
+
+## 生命周期
+
+> 在有关Maven的日常使用中，命令行的输入往往就对应了生命周期，如mvn package就表示执行默认生命周期阶段package。Maven的生命周期是抽象的，其实际行为都由插件来完成，如package阶段的任务可能就会由maven-jar-plugin完成。
+
