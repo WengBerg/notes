@@ -374,3 +374,19 @@ distributionManagement包含repository和snapshotRepository子元素，前者表
 
 > 在有关Maven的日常使用中，命令行的输入往往就对应了生命周期，如mvn package就表示执行默认生命周期阶段package。Maven的生命周期是抽象的，其实际行为都由插件来完成，如package阶段的任务可能就会由maven-jar-plugin完成。
 
+![maven生命周期](images/maven生命周期.png)
+
+> Maven拥有三套相互独立的生命周期，它们分别为clean、default和site。clean生命周期的目的是清理项目，default生命周期的目的是构建项目，而site生命周期的目的是建立项目站点。
+>
+> 每个生命周期包含一些阶段（phase），这些阶段是有顺序的，并且后面的阶段依赖于前面的阶段。
+>
+> 当用户调用pre-clean的时候，只有pre-clean阶段得以执行；当用户调用clean的时候，pre-clean和clean阶段会得以顺序执行；当用户调用post-clean的时候，pre-clean、clean和post-clean会得以顺序执行。
+>
+> 较之于生命周期阶段的前后依赖关系，三套生命周期本身是相互独立的，用户可以仅仅调用clean生命周期的某个阶段，或者仅仅调用default生命周期的某个阶段，而不会对其他生命周期产生任何影响。
+>
+> 例如，当用户调用clean生命周期的clean阶段的时候，不会触发default生命周期的任何阶段。
+
+- clean生命周期的目的是清理项目
+- default生命周期定义了真正构建时所需要执行的所有步骤
+- site生命周期的目的是建立和发布项目站点
+
