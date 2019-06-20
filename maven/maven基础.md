@@ -408,3 +408,8 @@ distributionManagement包含repository和snapshotRepository子元素，前者表
 
 示例：项目编译这一任务，它对应了default生命周期的compile这一阶段，而maven-compiler-plugin这一插件的compile目标能够完成该任务。因此，将它们绑定，就能实现项目编译的目的。图例：![生命周期阶段与插件目标绑定](images/生命周期阶段与插件目标绑定.png)
 
+其实是生命周期和插件的goal（具体对应的功能）相互绑定。
+
+图例：
+
+![clean生命周期阶段与插件](images/clean生命周期阶段与插件.png)
