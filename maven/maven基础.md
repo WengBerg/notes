@@ -178,27 +178,27 @@
 ### dependency
 
 ```xml
-＜project＞
+<project>
 ……
-＜dependencies＞
-＜dependency＞
-＜groupId＞……＜/groupId＞
-＜artifactId＞……＜/artifactId＞
-＜version＞……＜/version＞
-＜type＞……＜/type＞
-＜scope＞……＜/scope＞
-＜optional＞……＜/optional＞
-＜exclusions＞
-＜exclusion＞
+<dependencies>
+<dependency>
+<groupId>……</groupId>
+<artifactId>……</artifactId>
+<version>……</version>
+<type>……</type>
+<scope>……</scope>
+<optional>……</optional>
+<exclusions>
+<exclusion>
 ……
-＜/exclusion＞
+</exclusion>
 ……
-＜/exclusions＞
-＜/dependency＞
+</exclusions>
+</dependency>
 ……
-＜/dependencies＞
+</dependencies>
 ……
-＜/project＞
+</project>
 ```
 
 这里主要讲一下几个参数：
@@ -218,13 +218,13 @@
 	5. system：系统依赖范围。该依赖与三种classpath的关系，和provided依赖范围完全一致。
 	
 	   - ```xml
-	     ＜dependency＞
-	     ＜groupId＞javax.sql＜/groupId＞
-	     ＜artifactId＞jdbc-stdext＜/artifactId＞
-	     ＜version＞2.0＜/version＞
-	     ＜scope＞system＜/scope＞
-	     ＜systemPath＞${java.home}/lib/rt.jar＜/systemPath＞
-	     ＜/dependency＞
+	     <dependency>
+	     <groupId>javax.sql</groupId>
+	     <artifactId>jdbc-stdext</artifactId>
+	     <version>2.0</version>
+	     <scope>system</scope>
+	     <systemPath>${java.home}/lib/rt.jar</systemPath>
+	     </dependency>
 	     ```
 	
 	     system范围的依赖时必须通过systemPath元素显式地指定依赖文件的路径。
@@ -232,27 +232,17 @@
 	6. import（Maven 2.0.9及以上）：导入依赖范围。**只在dependencyManagement元素下才有效果**，使用该范围的依赖通常指向一个POM，作用是将目标POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。示例：
 
 	   - ```xml
-	     ＜dependencyManagement＞
-	     
-	     ＜dependencies＞
-	     
-	     ＜dependency＞
-	     
-	     ＜groupId＞com.juvenxu.mvnbook.account＜/groupId＞
-	     
-	     ＜artifactId＞account-parent＜/artifactId＞
-	     
-	     ＜version＞1.0-SNAPSHOT＜/version＞
-	     
-	     ＜type＞pom＜/type＞
-	     
-	     ＜scope＞import＜/scope＞
-	     
-	     ＜/dependency＞
-	     
-	     ＜/dependencies＞
-	     
-	     ＜/dependencyManagement＞
+	     <dependencyManagement>
+	     <dependencies>
+	     <dependency>
+	     <groupId>com.juvenxu.mvnbook.account</groupId>
+	     <artifactId>account-parent</artifactId>
+	     <version>1.0-SNAPSHOT</version>
+	     <type>pom</type>
+	     <scope>import</scope>
+	     </dependency>
+	     </dependencies>
+	     </dependencyManagement>
 	     ```
 	
 	     上面的代码会将 groupId 为 com.juvenxu.mvnbook.account，artifactId 为 account-parent的POM中的dependencyManagement配置导入并合并到当前POM的dependencyManagement元素中。
@@ -283,33 +273,20 @@
 - 远程仓库配置详情：
 
 ```xml
-＜repositories＞
-
-＜repository＞
-
-＜id＞jboss＜/id＞
-
-＜name＞JBoss Repository＜/name＞
-
-＜url＞http://repository.jboss.com/maven2/＜/url＞
-
-＜releases＞
-
-＜enabled＞true＜/enabled＞
-
-＜/releases＞
-
-＜snapshots＞
-
-＜enabled＞false＜/enabled＞
-
-＜/snapshots＞
-
-＜layout＞default＜/layout＞
-
-＜/repository＞
-
-＜/repositories＞
+<repositories>
+<repository>
+<id>jboss</id>
+<name>JBoss Repository</name>
+<url>http://repository.jboss.com/maven2/</url>
+<releases>
+<enabled>true</enabled>
+</releases>
+<snapshots>
+<enabled>false</enabled>
+</snapshots>
+<layout>default</layout>
+</repository>
+</repositories>
 ```
 
 > 该例配置中的releases和snapshots元素比较重要，它们用来控制Maven对于发布版构件和快照版构件的下载。
@@ -317,15 +294,11 @@
 对于releases和snapshots来说，除了enabled，它们还包含另外两个子元素updatePolicy和checksumPolicy：
 
 ```xml
-＜snapshots＞
-
-＜enabled＞true＜/enabled＞
-
-＜updatePolicy＞daily＜/updatePolicy＞
-
-＜checksumPolicy＞ignore＜/checksumPolicy＞
-
-＜/snapshots＞
+<snapshots>
+<enabled>true</enabled>
+<updatePolicy>daily</updatePolicy>
+<checksumPolicy>ignore</checksumPolicy>
+</snapshots>
 ```
 
 > 元素updatePolicy用来配置Maven从远程仓库检查更新的频率，默认的值是daily，表示Maven每天检查一次。其他可用的值包括：never—从不检查更新；always—每次构建都检查更新；interval:X—每隔X分钟检查一次更新（X为任意整数）。
@@ -339,29 +312,18 @@
 ### distributionManagement
 
 ```xml
-＜distributionManagement＞
-
-＜repository＞
-
-＜id＞proj-releases＜/id＞
-
-＜name＞Proj Release Repository＜/name＞
-
-＜url＞http://192.168.1.100/content/repositories/proj-releases＜/url＞
-
-＜/repository＞
-
-＜snapshotRepository＞
-
-＜id＞proj-snapshots＜/id＞
-
-＜name＞Proj Snapshot Repository＜/name＞
-
-＜url＞http://192.168.1.100/content/repositories/proj-snapshots＜/url＞
-
-＜/snapshotRepository＞
-
-＜/distributionManagement＞
+<distributionManagement>
+<repository>
+<id>proj-releases</id>
+<name>Proj Release Repository</name>
+<url>http://192.168.1.100/content/repositories/proj-releases</url>
+</repository>
+<snapshotRepository>
+<id>proj-snapshots</id>
+<name>Proj Snapshot Repository</name>
+<url>http://192.168.1.100/content/repositories/proj-snapshots</url>
+</snapshotRepository>
+</distributionManagement>
 ```
 
 distributionManagement包含repository和snapshotRepository子元素，前者表示发布版本构件的仓库，后者表示快照版本的仓库。
@@ -413,3 +375,69 @@ distributionManagement包含repository和snapshotRepository子元素，前者表
 图例：
 
 ![clean生命周期阶段与插件](images/clean生命周期阶段与插件.png)
+
+#### 插件配置
+
+- 命令行插件配置
+
+可以在Maven命令中使用-D参数，并伴随一个参数键=参数值的形式，来配置插件目标的参数。
+
+例如：maven-surefire-plugin提供了一个maven.test.skip参数，当其值为true的时候，就会跳过执行测试。
+
+在运行命令的时候，加上如下-D参数就能跳过测试：
+
+`$mvn install-Dmaven.test.skip=true`
+
+- POM中插件全局配置
+
+并不是所有的插件参数都适合从命令行配置，有些参数的值从项目创建到项目发布都不会改变，或者说很少改变，对于这种情况，在POM文件中一次性配置就显然比重复在命令行输入要方便。
+
+代码示例：
+
+```xml
+<build>
+<plugins>
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-compiler-plugin</artifactId>
+<version>2.1</version>
+<configuration>
+<source>1.5</source>
+<target>1.5</target>
+</configuration>
+</plugin>
+</plugins>
+</build>
+```
+
+这里添加了*source*和*target*两个全局参数。
+
+- POM中插件任务配置
+
+[代码示例](https://github.com/WengBerg/maven-demo-study/blob/master/testmymavenplugin/pom.xml)
+
+#### 插件信息
+
+- 通过官方网站获取插件信息
+
+maven插件一般都来源于**Apache和Codehaus**。
+
+*Apache*插件的详细列表地址[链接](http://maven.apache.org/plugins/index.html)，[下载地址](http://repo1.maven.org/maven2/org/apache/maven/plugins)
+
+*Codehaus*插件的详细列表地址[链接](http://mojo.codehaus.org/plugins.html)，[下载地址](http://repository.codehaus.org/org/codehaus/mojo)
+
+- 使用maven-help-plugin描述插件，获取插件信息
+
+1. 获取插件描述示例：
+
+`$mvn help:describe-Dplugin=org.apache.maven.plugins:maven-compiler-plugin`
+
+简化，可以使用插件目标前缀替换坐标。例如：`$mvn help:describe-Dplugin=compiler`
+
+2. 获取某个插件目标的信息，可以加上goal参数，示例：
+
+`$mvn help:describe-Dplugin=compiler-Dgoal=compile`
+
+3. 输出更详细的信息，可以加上detail参数，示例：
+
+`$mvn help:describe-Dplugin=compiler-Ddetail`
